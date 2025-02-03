@@ -1,0 +1,49 @@
+
+use std::io;
+
+struct Expense{
+    name: String,
+    amount: f64,
+}
+
+fn main() { 
+    let expense = create_expense();
+    println!("Your Expense {} - ${} was added", expense.name, expense.amount);
+
+}
+
+fn readline() -> String {
+    let mut input = String::new();
+    
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read Line");
+    
+    input
+}
+
+fn create_expense() -> Expense {
+    println!("Please input the name of your expense:");
+    let expense_input = readline();
+    
+    let expense_input = expense_input.trim().to_string();
+
+    let expense_amount_input = get_expense_amount();
+    
+    Expense {
+        name: expense_input,
+        amount: expense_amount_input,
+    }    
+}
+
+fn get_expense_amount() -> f64 {
+    loop {
+        println!("Please input the amount of you expense");
+        let amount_input = readline();
+
+        match amount_input.trim().parse::<f64>() {
+            Ok(num) => return num,
+            Err(_) => println!("Please input a valid number"),
+        }
+    }   
+}
