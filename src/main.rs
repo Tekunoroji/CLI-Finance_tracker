@@ -29,6 +29,8 @@ fn main() {
     income_all.extend(income_saved);
     expense_all.extend(expense_saved);
 
+    let mut budget = calculate_budget(&expense_all, &income_all);
+  
     loop {
         println!("==========================================");
         println!("||             CLI Finance              ||");
@@ -37,6 +39,7 @@ fn main() {
         println!("==========================================");
         println!("Choose an option by typing the number e.g. 1");
         println!("__________________________________________");
+        println!("Budget : ${}", budget);
         println!("1. Add Expense");
         println!("2. Add Income");
         println!("3. Show Transactions");
@@ -49,13 +52,14 @@ fn main() {
                 let expense = create_expense();
                 println!("Your Expense {} - ${} with category {} was added", expense.name, expense.amount, expense.category);
                 expense_all.push(expense);
+                budget = calculate_budget(&expense_all, &income_all);
                
             }
             "2" => {
                 let income = create_income();
                 println!("Added {} with ${} to your income",income.name, income.amount);
                 income_all.push(income);
-             
+                budget = calculate_budget(&expense_all, &income_all);
             }
             "3" => {
 
@@ -165,4 +169,21 @@ fn read_transactions() -> (Vec<Expense>, Vec<Income>) {
     let transactions = fs::read_to_string("transactions.json").expect("Unable to read file");
     let deserialized_transactions: (Vec<Expense>, Vec<Income>) = serde_json::from_str(&transactions).unwrap_or_else(|_| (vec![], vec![]));
     deserialized_transactions
+}
+
+//Function to calculate and display the budget
+
+fn calculate_budget(expenses: &Vec<Expense>, income: &Vec<Income>) -> f64 {
+    let mut income_all_amount: Vec<f64> = Vec::new();
+    let mut expense_all_amount: Vec<f64> = Vec::new();
+
+    for position in income {
+        income_all_amount.push(position.amount)
+    };
+
+    for position in expenses {
+        expense_all_amount.push(position.amount)
+    };
+
+    income_all_amount.iter().sum::<f64>() - expense_all_amount.iter().sum::<f64>()
 }
