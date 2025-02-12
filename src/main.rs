@@ -2,18 +2,17 @@ mod budget;
 mod models;
 mod transactions;
 
-use chrono::{Local};
 use crate::budget::*;
 use crate::transactions::*;
+use chrono::Local;
+use singleton::*;
 
-
-
-fn main() { 
+fn main() {
     let date_today = Local::now().format("%A, %d %B %Y");
     let mut transactions = Transactions::new();
 
     let mut budget = calculate_budget(&transactions.expense_all, &transactions.income_all);
-  
+    globalinfo!("Application Started");
     loop {
         println!("==========================================");
         println!("||             CLI Finance              ||");
@@ -29,29 +28,39 @@ fn main() {
         println!("4. Exit");
 
         let selection_input = readline();
+        globalinfo!("Line read");
 
         match selection_input.trim() {
             "1" => {
                 let expense = create_expense();
-                println!("Your Expense {} - ${} with category {} was added", expense.name, expense.amount, expense.category);
+                println!(
+                    "Your Expense {} - ${} with category {} was added",
+                    expense.name, expense.amount, expense.category
+                );
                 transactions.expense_all.push(expense);
                 budget = calculate_budget(&transactions.expense_all, &transactions.income_all);
-               
+                globalinfo!("Expense saved");
             }
             "2" => {
                 let income = create_income();
-                println!("Added {} with ${} to your income",income.name, income.amount);
+                println!(
+                    "Added {} with ${} to your income",
+                    income.name, income.amount
+                );
                 transactions.income_all.push(income);
                 budget = calculate_budget(&transactions.expense_all, &transactions.income_all);
+                globalinfo!("Income added");
             }
             "3" => {
-
                 println!("==========================================");
                 println!("||              Expenses                ||");
                 println!("==========================================");
 
                 for expense in &transactions.expense_all {
-                    println!("{}, {} category: {}",expense.name, expense.amount, expense.category);
+                    println!(
+                        "{}, {} category: {}",
+                        expense.name, expense.amount, expense.category
+                    );
                 }
 
                 println!("==========================================");
@@ -65,10 +74,10 @@ fn main() {
             "4" => {
                 println!("Exiting Program...");
                 transactions.save();
-                break
+                globalinfo("Transactions saved, shutting down");
+                break;
             }
             _ => println!("Invalid Input, Please choose a number from the menu!"),
         }
     }
 }
-

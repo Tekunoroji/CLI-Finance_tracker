@@ -1,11 +1,10 @@
-use crate::models::{Income, Expense};
-use std::io;
+use crate::models::{Expense, Income};
 use std::fs;
+use std::io;
 
 pub struct Transactions {
     pub income_all: Vec<Income>,
-    pub expense_all:  Vec<Expense>,
-    
+    pub expense_all: Vec<Expense>,
 }
 
 impl Transactions {
@@ -21,8 +20,6 @@ impl Transactions {
         save_exit(&self.expense_all, &self.income_all);
     }
 }
-
-
 
 //Helper function to get Income
 
@@ -56,12 +53,12 @@ pub fn create_expense() -> Expense {
     println!("=====Please input the category of your expense=====");
 
     let expense_category_input = readline().trim().to_string();
-    
+
     Expense {
         name: expense_input,
         amount: expense_amount_input,
         category: expense_category_input,
-    }    
+    }
 }
 
 //Function to create my Income Struct
@@ -82,7 +79,6 @@ pub fn create_income() -> Income {
 //Function to save the Transactions as JSON Data, so the entrys are not lost when we close the program.
 
 pub fn save_exit(expenses: &Vec<Expense>, income: &Vec<Income>) {
-
     let transactions = (expenses, income);
 
     let serialized_transactions = serde_json::to_string(&transactions).unwrap();
@@ -94,7 +90,8 @@ pub fn save_exit(expenses: &Vec<Expense>, income: &Vec<Income>) {
 
 pub fn read_transactions() -> (Vec<Expense>, Vec<Income>) {
     let transactions = fs::read_to_string("transactions.json").expect("Unable to read file");
-    let deserialized_transactions: (Vec<Expense>, Vec<Income>) = serde_json::from_str(&transactions).unwrap_or_else(|_| (vec![], vec![]));
+    let deserialized_transactions: (Vec<Expense>, Vec<Income>) =
+        serde_json::from_str(&transactions).unwrap_or_else(|_| (vec![], vec![]));
     deserialized_transactions
 }
 
